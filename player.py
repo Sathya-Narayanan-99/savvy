@@ -2,7 +2,7 @@ import pygame
 from support import import_folder
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, position, surface):
+    def __init__(self, position, surface, create_jump_particles):
         super().__init__()
         self.import_character_asset()
         self.frame_index = 0
@@ -15,6 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.import_dust_run_particles()
         self.dust_frame_index = 0
         self.dust_animation_speed = 0.15
+        self.create_jump_particles = create_jump_particles
 
         # Player Movement
         self.speed = 8
@@ -98,6 +99,7 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] and self.on_ground:
             self.jump()
+            self.create_jump_particles(self.rect.midbottom)
     
     def get_status(self):
         
