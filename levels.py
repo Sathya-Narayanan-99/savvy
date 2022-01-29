@@ -3,6 +3,7 @@ from tiles import Tile
 from player import Player
 from settings import tile_size, screen_width
 from particles import Particles
+from support import import_csv_layout
 
 class Level:
     def __init__(self, level_data, surface):
@@ -11,6 +12,7 @@ class Level:
         
         # Map of the level as a list
         self.setup_level(level_data)
+        terrain_layout = import_csv_layout(level_data['terrain'])
         
         # Integer that is used with the tile class to simulate the amount
         # of the world movement
