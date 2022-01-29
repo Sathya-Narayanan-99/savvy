@@ -37,7 +37,7 @@ class Level:
                 
                 # Condition to check if current cell consists player
                 elif cell == 'P':
-                    player = Player((x, y))
+                    player = Player((x, y), self.display_surface)
                     self.player.add(player)
 
     def scroll_x(self):
