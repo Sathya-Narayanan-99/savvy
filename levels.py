@@ -80,18 +80,37 @@ class Level:
                 elif player.directions.x > 0:
                     player.rect.right = sprite.rect.left
 
+    # Function that implements vertical movement of the player and
+    # vertical collision of the player with the tiles
     def vertical_movement_collision(self):
         player = self.player.sprite
+        
         player.apply_gravity()
-
+        
+        # Iterating through all the tiles sprite to check for collision
         for sprite in self.tiles.sprites():
+            
+            # Condition to check for collision
             if sprite.rect.colliderect(player.rect):
+                
+                # If the player collides to the top of the tile change the
+                # player's bottom position to tile's top position
                 if player.directions.y > 0:
                     player.rect.bottom = sprite.rect.top
                     player.directions.y = 0
+                    player.on_ground = True
+
+                # If the player collides to the bottom of the tile change the
+                # player's top position to tile's top position
                 elif player.directions.y < 0:
                     player.rect.top = sprite.rect.bottom
                     player.directions.y = 0
+                    player.on_ceiling = False
+
+        if player.on_ground and player.directions.y < 0 or player.directions.y > 1:
+            player.on_ground = False
+        if player.on_ceiling and player.directions.y > 0:
+            player.on_celing = False
 
     def run(self):
 
