@@ -15,6 +15,9 @@ class Level:
         # of the world movement
         self.world_shift = 0
 
+        # x position when a collision occurs horizontally
+        self.current_x = 0
+
     def setup_level(self, layout):
         self.tiles = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
@@ -75,10 +78,21 @@ class Level:
                 # player's left position to tile's right position
                 if player.directions.x < 0:
                     player.rect.left = sprite.rect.right
+                    player.on_left = True
+                    self.current_x = player.rect.left
+
                 # If the player collides to the left of the tile change the
                 # player's right position to tile's left position
                 elif player.directions.x > 0:
                     player.rect.right = sprite.rect.left
+                    player.on_right = True
+                    self.current_x = player.rect.right
+        
+        if player.on_left and (player.rect.left < self.current_x or player.directions.x >= 0):
+            player.on_left = False
+        
+        if player.on_right and (player.rect.right > self.current_x or player.directions.x <= 0):
+            player.on_right = False
 
     # Function that implements vertical movement of the player and
     # vertical collision of the player with the tiles
