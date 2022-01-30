@@ -1,4 +1,5 @@
 import pygame
+from pygame import surface
 
 # Tile sprite class
 class Tile(pygame.sprite.Sprite):
@@ -20,3 +21,10 @@ class StaticTile(Tile):
     def __init__(self, position, size, surface):
         super().__init__(position, size)
         self.image = surface
+
+class Crate(StaticTile):
+    def __init__(self, position, size):
+        surface = pygame.image.load("resources/graphics/terrain/crate.png").convert_alpha()
+        super().__init__(position, size, surface)
+        new_pos = (position[0], position[1] + size)
+        self.rect = self.image.get_rect(bottomleft = new_pos)

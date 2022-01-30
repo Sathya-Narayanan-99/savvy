@@ -1,5 +1,5 @@
 import pygame
-from tiles import Tile, StaticTile
+from tiles import Tile, StaticTile, Crate
 from player import Player
 from settings import tile_size, screen_width
 from particles import Particles
@@ -12,12 +12,22 @@ class Level:
         
         # Map of the level as a list
         self.setup_level(level_data)
-        terrain_layout = import_csv_layout(level_data['terrain'])
-        self.terrain_sprite = self.create_tile_group(terrain_layout, 'terrain')
         
+        # Terrain
+        terrain_layout = import_csv_layout(level_data['terrain'])
+        self.terrain_sprites = self.create_tile_group(terrain_layout, 'terrain')
+        
+        # Grass
+        grass_layout = import_csv_layout(level_data['grass'])
+        self.grass_sprites = self.create_tile_group(grass_layout, 'grass')
+
+        # Crate
+        crate_layout = import_csv_layout(level_data['crates'])
+        self.crate_sprite = self.create_tile_group(crate_layout, 'crates')
+
         # Integer that is used with the tile class to simulate the amount
         # of the world movement
-        self.world_shift = 0
+        self.world_shift = -5
 
         # x position when a collision occurs horizontally
         self.current_x = 0
@@ -69,7 +79,19 @@ class Level:
                         tile_surface = terrain_tile_list[int(val)]
                         
                         sprite = StaticTile((x, y), tile_size, tile_surface)
-                        sprite_group.add(sprite)
+
+                    if type == 'grass':
+
+                        grass_tile_list = partition_tile_set("resources/graphics/decoration/grass/grass.png")
+                        tile_surface = grass_tile_list[int(val)]
+
+                        sprite = StaticTile((x, y), tile_size, tile_surface)
+
+                    if type == 'crates':
+
+                        sprite = Crate((x, y), tile_size)
+                    
+                    sprite_group.add(sprite)
 
         return sprite_group
 
@@ -191,9 +213,19 @@ class Level:
         #self.tiles.update(self.world_shift)
         #self.tiles.draw(self.display_surface)
         #self.scroll_x()
-        self.terrain_sprite.update(self.world_shift)
-        self.terrain_sprite.draw(self.display_surface)
-    
+        
+        # Terrain
+        self.terrain_sprites.update(self.world_shift)
+        self.terrain_sprites.draw(self.display_surface)
+
+        # Grass
+        self.grass_sprites.update(self.world_shift)
+        self.grass_sprites.draw(self.display_surface)
+
+        # Crate
+        self.crate_sprite.update(self.world_shift)
+        self.crate_sprite.draw(self.display_surface)
+
         # Player
         # self.player.update()
         # self.horizontal_movement_collision()
