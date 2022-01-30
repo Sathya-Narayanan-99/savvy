@@ -16,11 +16,6 @@ class Node(pygame.sprite.Sprite):
         self.is_available = is_available
 
         self.icon_detection_zone = pygame.Rect(self.rect.centerx - icon_speed //2, self.rect.centery - icon_speed //2, icon_speed, icon_speed)
-        
-        if self.is_available:
-            pass
-        else:
-            pass
 
     def animate(self):
         self.frame_index += self.animation_speed
@@ -62,7 +57,7 @@ class Overworld:
         # sprites
         self.setup_nodes()
         self.setup_icon()
-        self.sky = Sky(8)
+        self.sky = Sky(8, 'overworld')
     
     def setup_nodes(self):
         self.nodes_sprite = pygame.sprite.Group()
@@ -76,8 +71,9 @@ class Overworld:
             self.nodes_sprite.add(sprite)
 
     def draw_paths(self):
-        points = [node['node_pos'] for index, node in enumerate(levels.values()) if index <= self.max_level]
-        pygame.draw.lines(self.display_surface, '#a04f45', False, points, 6)
+        if self.max_level > 0:
+            points = [node['node_pos'] for index, node in enumerate(levels.values()) if index <= self.max_level]
+            pygame.draw.lines(self.display_surface, '#a04f45', False, points, 6)
 
     def setup_icon(self):
         self.icon_sprite = pygame.sprite.GroupSingle()
