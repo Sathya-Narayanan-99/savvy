@@ -61,6 +61,8 @@ class Palm(AnimatedTile):
         if path == 'resources/graphics/terrain/palm_small':
             position = (position[0], position[1] - 38)
         elif path == 'resources/graphics/terrain/palm_large':
-            position = (position[0], position[1] - 64)
+            position = (position[0], position[1] - 70)
+        elif path == 'resources/graphics/terrain/palm_bg':
+            position = (position[0], position[1] - 60)
         
         self.rect.topleft = position

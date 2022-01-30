@@ -35,7 +35,7 @@ def partition_tile_set(path):
             x = col * tile_size
             y = row * tile_size
 
-            new_surf = pygame.Surface((tile_size, tile_size))
+            new_surf = pygame.Surface((tile_size, tile_size), flags=pygame.SRCALPHA)
             new_surf.blit(surface, (0,0), pygame.Rect(x, y, tile_size, tile_size))
             partitioned_tile.append(new_surf)
 

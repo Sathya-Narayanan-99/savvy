@@ -12,6 +12,14 @@ class Level:
         
         # Map of the level as a list
         self.setup_level(level_data)
+
+
+        # Integer that is used with the tile class to simulate the amount
+        # of the world movement
+        self.world_shift = 0
+
+        # x position when a collision occurs horizontally
+        self.current_x = 0
         
         # Terrain
         terrain_layout = import_csv_layout(level_data['terrain'])
@@ -33,12 +41,9 @@ class Level:
         fg_palm_layout = import_csv_layout(level_data['fg_palms'])
         self.fg_palm_sprite = self.create_tile_group(fg_palm_layout, 'fg_palms')
 
-        # Integer that is used with the tile class to simulate the amount
-        # of the world movement
-        self.world_shift = 0
-
-        # x position when a collision occurs horizontally
-        self.current_x = 0
+        # Bg_palms
+        bg_palm_layout = import_csv_layout(level_data['bg_palms'])
+        self.bg_palm_sprite = self.create_tile_group(bg_palm_layout, 'bg_palms')
 
         # Dust
         self.dust_sprite = pygame.sprite.GroupSingle()
@@ -110,6 +115,9 @@ class Level:
                             sprite = Palm((x, y), tile_size, 'resources/graphics/terrain/palm_small')
                         elif val == '1':
                             sprite = Palm((x, y), tile_size, 'resources/graphics/terrain/palm_large')
+
+                    if type == 'bg_palms':
+                        sprite = Palm((x, y), tile_size, 'resources/graphics/terrain/palm_bg')
                     sprite_group.add(sprite)
 
         return sprite_group
@@ -233,25 +241,29 @@ class Level:
         #self.tiles.draw(self.display_surface)
         #self.scroll_x()
         
+        # Bg_palms
+        self.bg_palm_sprite.update(self.world_shift)
+        self.bg_palm_sprite.draw(self.display_surface)
+
+        # Fg_palms
+        self.fg_palm_sprite.update(self.world_shift)
+        self.fg_palm_sprite.draw(self.display_surface)
+
         # Terrain
         self.terrain_sprites.update(self.world_shift)
         self.terrain_sprites.draw(self.display_surface)
-
-        # Grass
-        self.grass_sprites.update(self.world_shift)
-        self.grass_sprites.draw(self.display_surface)
 
         # Crate
         self.crate_sprite.update(self.world_shift)
         self.crate_sprite.draw(self.display_surface)
 
+        # Grass
+        self.grass_sprites.update(self.world_shift)
+        self.grass_sprites.draw(self.display_surface)
+
         # Coins
         self.coin_sprite.update(self.world_shift)
         self.coin_sprite.draw(self.display_surface)
-
-        # Fg_palms
-        self.fg_palm_sprite.update(self.world_shift)
-        self.fg_palm_sprite.draw(self.display_surface)
 
         # Player
         # self.player.update()
