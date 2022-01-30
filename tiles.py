@@ -1,5 +1,6 @@
 import pygame
-from pygame import surface
+from support import import_folder
+
 
 # Tile sprite class
 class Tile(pygame.sprite.Sprite):
@@ -28,3 +29,27 @@ class Crate(StaticTile):
         super().__init__(position, size, surface)
         new_pos = (position[0], position[1] + size)
         self.rect = self.image.get_rect(bottomleft = new_pos)
+
+class AnimatedTile(Tile):
+    def __init__(self, position, size, path):
+        super().__init__(position, size)
+        self.frames = import_folder(path)
+        self.frame_index = 0
+        self.animation_speed = 0.15
+
+    def animate(self):
+        self.frame_index += self.animation_speed
+        if self.frame_index >= len(self.frames):
+            self.frame_index = 0
+        
+        self.image = self.frames[int(self.frame_index)]
+
+    def update(self, x_shift):
+        super().update(x_shift)
+        self.animate()
+
+class Coin(AnimatedTile):
+    def __init__(self, position, size, path):
+        super().__init__(position, size, path)
+        new_pos = (position[0] + size // 2, position[1] + size // 2 )
+        self.rect = self.image.get_rect(center = new_pos)

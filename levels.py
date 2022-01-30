@@ -1,5 +1,5 @@
 import pygame
-from tiles import Tile, StaticTile, Crate
+from tiles import Tile, StaticTile, Crate, Coin
 from player import Player
 from settings import tile_size, screen_width
 from particles import Particles
@@ -25,9 +25,13 @@ class Level:
         crate_layout = import_csv_layout(level_data['crates'])
         self.crate_sprite = self.create_tile_group(crate_layout, 'crates')
 
+        # Coins
+        coin_layout = import_csv_layout(level_data['coins'])
+        self.coin_sprite = self.create_tile_group(coin_layout, 'coins')
+
         # Integer that is used with the tile class to simulate the amount
         # of the world movement
-        self.world_shift = -5
+        self.world_shift = 0
 
         # x position when a collision occurs horizontally
         self.current_x = 0
@@ -90,7 +94,12 @@ class Level:
                     if type == 'crates':
 
                         sprite = Crate((x, y), tile_size)
-                    
+
+                    if type == 'coins':
+                        if val == '0': 
+                            sprite = Coin((x,y), tile_size, 'resources/graphics/coins/gold')
+                        elif val == '1':
+                            sprite = Coin((x,y), tile_size, 'resources/graphics/coins/silver')
                     sprite_group.add(sprite)
 
         return sprite_group
@@ -225,6 +234,10 @@ class Level:
         # Crate
         self.crate_sprite.update(self.world_shift)
         self.crate_sprite.draw(self.display_surface)
+
+        # Coins
+        self.coin_sprite.update(self.world_shift)
+        self.coin_sprite.draw(self.display_surface)
 
         # Player
         # self.player.update()
