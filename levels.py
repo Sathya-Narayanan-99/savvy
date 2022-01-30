@@ -1,4 +1,5 @@
 import pygame
+from pygame import sprite
 from tiles import Tile, StaticTile, Crate, Coin, Palm
 from player import Player
 from enemy import Enemy
@@ -17,11 +18,17 @@ class Level:
 
         # Integer that is used with the tile class to simulate the amount
         # of the world movement
-        self.world_shift = 0
+        self.world_shift = -3
 
         # x position when a collision occurs horizontally
         self.current_x = 0
         
+        # Player
+        player_layout = import_csv_layout(level_data['player'])
+        self.player_sprite = pygame.sprite.GroupSingle()
+        self.goal_sprite = pygame.sprite.GroupSingle()
+        self.player_setup(player_layout) 
+
         # Terrain
         terrain_layout = import_csv_layout(level_data['terrain'])
         self.terrain_sprites = self.create_tile_group(terrain_layout, 'terrain')
@@ -85,6 +92,20 @@ class Level:
             self.player_on_ground = True
         else:
             self.player_on_ground = False
+
+    def player_setup(self, layout):
+        for row_index, row in enumerate(layout):
+            for col_index, val in enumerate(row):
+                
+                x = col_index * tile_size
+                y = row_index * tile_size
+
+                if val == '0':
+                    pass # player goes here
+                if val == '1':
+                    hat_surface = pygame.image.load('resources/graphics/character/hat.png')
+                    sprite = StaticTile((x,y), tile_size, hat_surface)
+                    self.goal_sprite.add(sprite)
 
     def create_tile_group(self, layout, type):
         sprite_group = pygame.sprite.Group()
@@ -291,6 +312,10 @@ class Level:
         # Coins
         self.coin_sprite.update(self.world_shift)
         self.coin_sprite.draw(self.display_surface)
+
+        # Player
+        self.goal_sprite.update(self.world_shift)
+        self.goal_sprite.draw(self.display_surface)
 
         # Player
         # self.player.update()
