@@ -3,8 +3,9 @@ from pygame import sprite
 from tiles import Tile, StaticTile, Crate, Coin, Palm
 from player import Player
 from enemy import Enemy
-from settings import tile_size, screen_width
+from settings import tile_size, screen_width, screen_height
 from particles import Particles
+from decorations import Sky, Water, Cloud
 from support import import_csv_layout, partition_tile_set
 
 class Level:
@@ -60,6 +61,12 @@ class Level:
         # Constraints
         constraints_layout = import_csv_layout(level_data['constraints'])
         self.constraints_sprite = self.create_tile_group(constraints_layout, 'constraints')
+
+        # Decorations
+        self.sky = Sky(7)
+        level_width = len(terrain_layout[0]) * tile_size
+        self.water = Water(screen_height - 20, level_width)
+        self.cloud = Cloud(400 , level_width, 20)
 
         # Dust
         self.dust_sprite = pygame.sprite.GroupSingle()
@@ -282,6 +289,10 @@ class Level:
         #self.tiles.update(self.world_shift)
         #self.tiles.draw(self.display_surface)
         #self.scroll_x()
+
+        # Sky
+        self.sky.draw(self.display_surface)
+        self.cloud.draw(self.display_surface, self.world_shift)
         
         # Bg_palms
         self.bg_palm_sprite.update(self.world_shift)
@@ -316,6 +327,9 @@ class Level:
         # Player
         self.goal_sprite.update(self.world_shift)
         self.goal_sprite.draw(self.display_surface)
+
+        # Water
+        self.water.draw(self.display_surface, self.world_shift)
 
         # Player
         # self.player.update()
