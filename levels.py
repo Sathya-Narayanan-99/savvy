@@ -12,23 +12,23 @@ class Level:
     def __init__(self, level_data, surface):
         # Screen where all the sprites in the level should be drawn
         self.display_surface = surface
-        
-        # Map of the level as a list
-        self.setup_level(level_data)
-
 
         # Integer that is used with the tile class to simulate the amount
         # of the world movement
-        self.world_shift = -3
-
-        # x position when a collision occurs horizontally
-        self.current_x = 0
+        self.world_shift = 0
         
         # Player
         player_layout = import_csv_layout(level_data['player'])
         self.player_sprite = pygame.sprite.GroupSingle()
         self.goal_sprite = pygame.sprite.GroupSingle()
-        self.player_setup(player_layout) 
+        self.player_setup(player_layout)
+
+        # x position when a collision occurs horizontally
+        self.current_x = None
+
+        # Dust
+        self.dust_sprite = pygame.sprite.GroupSingle()
+        self.player_on_ground = False 
 
         # Terrain
         terrain_layout = import_csv_layout(level_data['terrain'])
@@ -68,13 +68,9 @@ class Level:
         self.water = Water(screen_height - 20, level_width)
         self.cloud = Cloud(400 , level_width, 20)
 
-        # Dust
-        self.dust_sprite = pygame.sprite.GroupSingle()
-        self.player_on_ground = False
-
     def create_jump_particles(self, pos):
         
-        if self.player.sprite.facing_right:
+        if self.player_sprite.sprite.facing_right:
             pos -= pygame.math.Vector2(10, 5)
         else:
             pos += pygame.math.Vector2(10, -5)
@@ -83,10 +79,10 @@ class Level:
         self.dust_sprite.add(jump_particle_sprite)
 
     def create_fall_particle(self):
-        if not self.player_on_ground and self.player.sprite.on_ground and not self.dust_sprite:
-            pos = self.player.sprite.rect.midbottom
+        if not self.player_on_ground and self.player_sprite.sprite.on_ground and not self.dust_sprite:
+            pos = self.player_sprite.sprite.rect.midbottom
             
-            if self.player.sprite.facing_right:
+            if self.player_sprite.sprite.facing_right:
                 pos -= pygame.math.Vector2(10, 15)
             else:
                 pos += pygame.math.Vector2(10, -15)
@@ -95,7 +91,7 @@ class Level:
             self.dust_sprite.add(fall_dust_particle)
 
     def get_player_on_ground(self):
-        if self.player.sprite.on_ground:
+        if self.player_sprite.sprite.on_ground:
             self.player_on_ground = True
         else:
             self.player_on_ground = False
@@ -108,7 +104,9 @@ class Level:
                 y = row_index * tile_size
 
                 if val == '0':
-                    pass # player goes here
+                    sprite = Player((x, y), self.display_surface, self.create_jump_particles)
+                    self.player_sprite.add(sprite)
+
                 if val == '1':
                     hat_surface = pygame.image.load('resources/graphics/character/hat.png')
                     sprite = StaticTile((x,y), tile_size, hat_surface)
@@ -166,30 +164,8 @@ class Level:
 
         return sprite_group
 
-    def setup_level(self, layout):
-        self.tiles = pygame.sprite.Group()
-        self.player = pygame.sprite.GroupSingle()
-        
-        # Iteration through the level list to get its x and y position
-        for row_index, row in enumerate(layout):
-            for cell_index, cell in enumerate(row):
-                
-                # Multiplying the positions to scale it with respect to the size of the tile
-                x = cell_index * tile_size
-                y = row_index * tile_size
-
-                # Condition to check if current cell consists a tile
-                if cell == 'X':
-                    tile = Tile((x, y), tile_size)
-                    self.tiles.add(tile)
-                
-                # Condition to check if current cell consists player
-                elif cell == 'P':
-                    player = Player((x, y), self.display_surface, self.create_jump_particles)
-                    self.player.add(player)
-
     def scroll_x(self):
-        player = self.player.sprite
+        player = self.player_sprite.sprite
         player_x = player.rect.centerx
         direction_x = player.directions.x
 
@@ -211,13 +187,15 @@ class Level:
     # Function that implements horizontal movement of the player and
     # horizontal collision of the player with the tiles
     def horizontal_movement_collision(self):
-        player = self.player.sprite
+        player = self.player_sprite.sprite
         
         # Moves the player horizontally based on the player's direction
         player.rect.x += player.directions.x * player.speed
 
+        collidable_sprites = self.terrain_sprites.sprites() + self.fg_palm_sprite.sprites() + self.crate_sprite.sprites()
+
         # Iterating through all the tiles sprite to check for collision
-        for sprite in self.tiles.sprites():
+        for sprite in collidable_sprites:
             
             # Condition to check for collision
             if sprite.rect.colliderect(player.rect):
@@ -245,12 +223,14 @@ class Level:
     # Function that implements vertical movement of the player and
     # vertical collision of the player with the tiles
     def vertical_movement_collision(self):
-        player = self.player.sprite
+        player = self.player_sprite.sprite
         
         player.apply_gravity()
         
+        collidable_sprites = self.terrain_sprites.sprites() + self.fg_palm_sprite.sprites() + self.crate_sprite.sprites()
+
         # Iterating through all the tiles sprite to check for collision
-        for sprite in self.tiles.sprites():
+        for sprite in collidable_sprites:
             
             # Condition to check for collision
             if sprite.rect.colliderect(player.rect):
@@ -280,15 +260,6 @@ class Level:
                 enemy.reverse_direction()
 
     def run(self):
-
-        # Dust
-        #self.dust_sprite.update(self.world_shift)
-        #self.dust_sprite.draw(self.display_surface)
-
-        # Level
-        #self.tiles.update(self.world_shift)
-        #self.tiles.draw(self.display_surface)
-        #self.scroll_x()
 
         # Sky
         self.sky.draw(self.display_surface)
@@ -325,17 +296,19 @@ class Level:
         self.coin_sprite.draw(self.display_surface)
 
         # Player
+        self.player_sprite.update()
+        self.horizontal_movement_collision()
+        self.get_player_on_ground()
+        self.vertical_movement_collision()
+        self.create_fall_particle()
+        self.scroll_x()
+        self.player_sprite.draw(self.display_surface)
         self.goal_sprite.update(self.world_shift)
         self.goal_sprite.draw(self.display_surface)
 
-        # Water
-        self.water.draw(self.display_surface, self.world_shift)
+        # Dust
+        self.dust_sprite.update(self.world_shift)
+        self.dust_sprite.draw(self.display_surface)
 
-        # Player
-        # self.player.update()
-        # self.horizontal_movement_collision()
-        # self.get_player_on_ground()
-        # self.vertical_movement_collision()
-        # self.create_fall_particle()
-        # self.player.draw(self.display_surface)
-        
+        # Water
+        self.water.draw(self.display_surface, self.world_shift)        
