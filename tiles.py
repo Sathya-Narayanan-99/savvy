@@ -53,3 +53,14 @@ class Coin(AnimatedTile):
         super().__init__(position, size, path)
         new_pos = (position[0] + size // 2, position[1] + size // 2 )
         self.rect = self.image.get_rect(center = new_pos)
+
+class Palm(AnimatedTile):
+    def __init__(self, position, size, path):
+        super().__init__(position, size, path)
+        
+        if path == 'resources/graphics/terrain/palm_small':
+            position = (position[0], position[1] - 38)
+        elif path == 'resources/graphics/terrain/palm_large':
+            position = (position[0], position[1] - 64)
+        
+        self.rect.topleft = position

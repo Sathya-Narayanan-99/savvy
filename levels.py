@@ -1,5 +1,5 @@
 import pygame
-from tiles import Tile, StaticTile, Crate, Coin
+from tiles import Tile, StaticTile, Crate, Coin, Palm
 from player import Player
 from settings import tile_size, screen_width
 from particles import Particles
@@ -28,6 +28,10 @@ class Level:
         # Coins
         coin_layout = import_csv_layout(level_data['coins'])
         self.coin_sprite = self.create_tile_group(coin_layout, 'coins')
+
+        # Fg_palms
+        fg_palm_layout = import_csv_layout(level_data['fg_palms'])
+        self.fg_palm_sprite = self.create_tile_group(fg_palm_layout, 'fg_palms')
 
         # Integer that is used with the tile class to simulate the amount
         # of the world movement
@@ -100,6 +104,12 @@ class Level:
                             sprite = Coin((x,y), tile_size, 'resources/graphics/coins/gold')
                         elif val == '1':
                             sprite = Coin((x,y), tile_size, 'resources/graphics/coins/silver')
+                    
+                    if type == 'fg_palms':
+                        if val == '0':
+                            sprite = Palm((x, y), tile_size, 'resources/graphics/terrain/palm_small')
+                        elif val == '1':
+                            sprite = Palm((x, y), tile_size, 'resources/graphics/terrain/palm_large')
                     sprite_group.add(sprite)
 
         return sprite_group
@@ -238,6 +248,10 @@ class Level:
         # Coins
         self.coin_sprite.update(self.world_shift)
         self.coin_sprite.draw(self.display_surface)
+
+        # Fg_palms
+        self.fg_palm_sprite.update(self.world_shift)
+        self.fg_palm_sprite.draw(self.display_surface)
 
         # Player
         # self.player.update()
