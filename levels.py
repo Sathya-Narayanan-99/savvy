@@ -1,6 +1,7 @@
 import pygame
 from tiles import Tile, StaticTile, Crate, Coin, Palm
 from player import Player
+from enemy import Enemy
 from settings import tile_size, screen_width
 from particles import Particles
 from support import import_csv_layout, partition_tile_set
@@ -44,6 +45,14 @@ class Level:
         # Bg_palms
         bg_palm_layout = import_csv_layout(level_data['bg_palms'])
         self.bg_palm_sprite = self.create_tile_group(bg_palm_layout, 'bg_palms')
+
+        # Enemies
+        enemies_layout = import_csv_layout(level_data['enemies'])
+        self.enemies_sprite = self.create_tile_group(enemies_layout, 'enemies')
+
+        # Constraints
+        constraints_layout = import_csv_layout(level_data['constraints'])
+        self.constraints_sprite = self.create_tile_group(constraints_layout, 'constraints')
 
         # Dust
         self.dust_sprite = pygame.sprite.GroupSingle()
@@ -118,6 +127,13 @@ class Level:
 
                     if type == 'bg_palms':
                         sprite = Palm((x, y), tile_size, 'resources/graphics/terrain/palm_bg')
+
+                    if type == 'enemies':
+                        sprite = Enemy((x, y), tile_size)
+
+                    if type == 'constraints':
+                        sprite = Tile((x, y), tile_size)
+
                     sprite_group.add(sprite)
 
         return sprite_group
@@ -230,6 +246,11 @@ class Level:
         if player.on_ceiling and player.directions.y > 0:
             player.on_celing = False
 
+    def enemy_collision(self):
+        for enemy in self.enemies_sprite.sprites():
+            if pygame.sprite.spritecollide(enemy, self.constraints_sprite, False):
+                enemy.reverse_direction()
+
     def run(self):
 
         # Dust
@@ -248,6 +269,12 @@ class Level:
         # Fg_palms
         self.fg_palm_sprite.update(self.world_shift)
         self.fg_palm_sprite.draw(self.display_surface)
+
+        # Enemy
+        self.enemies_sprite.update(self.world_shift)
+        self.constraints_sprite.update(self.world_shift)
+        self.enemy_collision()
+        self.enemies_sprite.draw(self.display_surface)
 
         # Terrain
         self.terrain_sprites.update(self.world_shift)
