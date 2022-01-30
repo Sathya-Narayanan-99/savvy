@@ -1,5 +1,4 @@
 import pygame
-from pygame import sprite
 from tiles import Tile, StaticTile, Crate, Coin, Palm
 from player import Player
 from enemy import Enemy
@@ -7,15 +6,22 @@ from settings import tile_size, screen_width, screen_height
 from particles import Particles
 from decorations import Sky, Water, Cloud
 from support import import_csv_layout, partition_tile_set
+from game_data import levels
 
 class Level:
-    def __init__(self, level_data, surface):
+    def __init__(self, current_level, surface, create_overworld):
         # Screen where all the sprites in the level should be drawn
         self.display_surface = surface
 
         # Integer that is used with the tile class to simulate the amount
         # of the world movement
         self.world_shift = 0
+
+        # Overworld
+        self.create_overworld = create_overworld
+        self.current_level = current_level
+        level_data = levels[self.current_level]
+        self.new_max_level = level_data['unlock']
         
         # Player
         player_layout = import_csv_layout(level_data['player'])
@@ -259,6 +265,14 @@ class Level:
             if pygame.sprite.spritecollide(enemy, self.constraints_sprite, False):
                 enemy.reverse_direction()
 
+    def check_death(self):
+        if self.player_sprite.sprite.rect.top > screen_height:
+            self.create_overworld(self.current_level, 0)
+
+    def check_win(self):
+        if pygame.sprite.spritecollide(self.player_sprite.sprite, self.goal_sprite, False):
+            self.create_overworld(self.current_level, self.new_max_level)
+
     def run(self):
 
         # Sky
@@ -305,6 +319,9 @@ class Level:
         self.player_sprite.draw(self.display_surface)
         self.goal_sprite.update(self.world_shift)
         self.goal_sprite.draw(self.display_surface)
+
+        self.check_death()
+        self.check_win()
 
         # Dust
         self.dust_sprite.update(self.world_shift)

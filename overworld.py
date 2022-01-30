@@ -26,12 +26,13 @@ class Icon(pygame.sprite.Sprite):
         self.rect.center = self.position
 
 class Overworld:
-    def __init__(self, start_level, max_level, surface):
+    def __init__(self, start_level, max_level, surface, create_level):
 
         # Setup
         self.display_surface = surface
         self.max_level = max_level
         self.current_level = start_level
+        self.create_level = create_level
 
         # icon movement
         self.is_moving = False
@@ -46,7 +47,7 @@ class Overworld:
         self.nodes_sprite = pygame.sprite.Group()
         for index, node_data in enumerate(levels.values()):
 
-            if index < self.max_level:
+            if index <= self.max_level:
                 sprite = Node(node_data['node_pos'], True, self.speed)
             else:
                 sprite = Node(node_data['node_pos'], False, self.speed)
@@ -54,7 +55,7 @@ class Overworld:
             self.nodes_sprite.add(sprite)
 
     def draw_paths(self):
-        points = [node['node_pos'] for index, node in enumerate(levels.values()) if index < self.max_level]
+        points = [node['node_pos'] for index, node in enumerate(levels.values()) if index <= self.max_level]
         pygame.draw.lines(self.display_surface, 'red', False, points, 6)
 
     def setup_icon(self):
@@ -66,7 +67,7 @@ class Overworld:
     def get_input(self):
         keys = pygame.key.get_pressed()
         if not self.is_moving:
-            if keys[pygame.K_RIGHT] and self.current_level < self.max_level - 1:
+            if keys[pygame.K_RIGHT] and self.current_level < self.max_level:
                 self.movement_direction = self.get_movement_data('next')
                 self.current_level += 1
                 self.is_moving = True
@@ -75,6 +76,9 @@ class Overworld:
                 self.movement_direction = self.get_movement_data('prev')
                 self.current_level -= 1
                 self.is_moving = True
+
+            elif keys[pygame.K_SPACE]:
+                self.create_level(self.current_level)
     
     def get_movement_data(self, direction):
         pos = self.nodes_sprite.sprites()[self.current_level].rect.center
