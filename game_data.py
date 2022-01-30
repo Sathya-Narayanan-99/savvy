@@ -25,7 +25,7 @@ level_1 = {
     'terrain': 'resources/levels/0/level_0_terrain.csv',
     'node_pos':(300,220),
     'unlock':2,
-    'node_graphics': 'resources/graphics/overworld/0'
+    'node_graphics': 'resources/graphics/overworld/1'
 }
 level_2 = {
     'bg_palms': 'resources/levels/0/level_0_bg_palms.csv',
@@ -39,7 +39,7 @@ level_2 = {
     'terrain': 'resources/levels/0/level_0_terrain.csv',
     'node_pos':(480,610),
     'unlock':3,
-    'node_graphics': 'resources/graphics/overworld/0'
+    'node_graphics': 'resources/graphics/overworld/2'
 }
 
 level_3 = {
@@ -54,7 +54,7 @@ level_3 = {
     'terrain': 'resources/levels/0/level_0_terrain.csv',
     'node_pos':(610,350),
     'unlock':4,
-    'node_graphics': 'resources/graphics/overworld/0'
+    'node_graphics': 'resources/graphics/overworld/3'
 }
 
 level_4 = {
@@ -69,7 +69,7 @@ level_4 = {
     'terrain': 'resources/levels/0/level_0_terrain.csv',
     'node_pos':(880,210),
     'unlock':5,
-    'node_graphics': 'resources/graphics/overworld/0'
+    'node_graphics': 'resources/graphics/overworld/4'
 }
 
 level_5 = {
@@ -84,7 +84,7 @@ level_5 = {
     'terrain': 'resources/levels/0/level_0_terrain.csv',
     'node_pos':(1050,400),
     'unlock':5,
-    'node_graphics': 'resources/graphics/overworld/0'
+    'node_graphics': 'resources/graphics/overworld/5'
 }
 
 levels = {
