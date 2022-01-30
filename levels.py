@@ -1,9 +1,9 @@
 import pygame
-from tiles import Tile
+from tiles import Tile, StaticTile
 from player import Player
 from settings import tile_size, screen_width
 from particles import Particles
-from support import import_csv_layout
+from support import import_csv_layout, partition_tile_set
 
 class Level:
     def __init__(self, level_data, surface):
@@ -13,6 +13,7 @@ class Level:
         # Map of the level as a list
         self.setup_level(level_data)
         terrain_layout = import_csv_layout(level_data['terrain'])
+        self.terrain_sprite = self.create_tile_group(terrain_layout, 'terrain')
         
         # Integer that is used with the tile class to simulate the amount
         # of the world movement
@@ -52,6 +53,25 @@ class Level:
             self.player_on_ground = True
         else:
             self.player_on_ground = False
+
+    def create_tile_group(self, layout, type):
+        sprite_group = pygame.sprite.Group()
+
+        for row_index, row in enumerate(layout):
+            for col_index, val in enumerate(row):
+                if val != '-1':
+                    x = col_index * tile_size
+                    y = row_index * tile_size
+
+                    if type == 'terrain':
+
+                        terrain_tile_list = partition_tile_set("resources/graphics/terrain/terrain_tiles.png")
+                        tile_surface = terrain_tile_list[int(val)]
+                        
+                        sprite = StaticTile((x, y), tile_size, tile_surface)
+                        sprite_group.add(sprite)
+
+        return sprite_group
 
     def setup_level(self, layout):
         self.tiles = pygame.sprite.Group()
@@ -164,19 +184,21 @@ class Level:
     def run(self):
 
         # Dust
-        self.dust_sprite.update(self.world_shift)
-        self.dust_sprite.draw(self.display_surface)
+        #self.dust_sprite.update(self.world_shift)
+        #self.dust_sprite.draw(self.display_surface)
 
         # Level
-        self.tiles.update(self.world_shift)
-        self.tiles.draw(self.display_surface)
-        self.scroll_x()
+        #self.tiles.update(self.world_shift)
+        #self.tiles.draw(self.display_surface)
+        #self.scroll_x()
+        self.terrain_sprite.update(self.world_shift)
+        self.terrain_sprite.draw(self.display_surface)
     
         # Player
-        self.player.update()
-        self.horizontal_movement_collision()
-        self.get_player_on_ground()
-        self.vertical_movement_collision()
-        self.create_fall_particle()
-        self.player.draw(self.display_surface)
+        # self.player.update()
+        # self.horizontal_movement_collision()
+        # self.get_player_on_ground()
+        # self.vertical_movement_collision()
+        # self.create_fall_particle()
+        # self.player.draw(self.display_surface)
         

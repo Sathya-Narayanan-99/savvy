@@ -14,3 +14,9 @@ class Tile(pygame.sprite.Sprite):
     # Method that shifts the tile along the x-axis to simulate world movement
     def update(self, x_shift):
         self.rect.x += x_shift
+
+
+class StaticTile(Tile):
+    def __init__(self, position, size, surface):
+        super().__init__(position, size)
+        self.image = surface
