@@ -9,7 +9,7 @@ from support import import_csv_layout, partition_tile_set
 from game_data import levels
 
 class Level:
-    def __init__(self, current_level, surface, create_overworld):
+    def __init__(self, current_level, surface, create_overworld, update_coin_count):
         # Screen where all the sprites in the level should be drawn
         self.display_surface = surface
 
@@ -23,6 +23,9 @@ class Level:
         level_data = levels[self.current_level]
         self.new_max_level = level_data['unlock']
         
+        # UI
+        self.update_coin_count = update_coin_count
+
         # Player
         player_layout = import_csv_layout(level_data['player'])
         self.player_sprite = pygame.sprite.GroupSingle()
@@ -147,9 +150,9 @@ class Level:
 
                     if type == 'coins':
                         if val == '0': 
-                            sprite = Coin((x,y), tile_size, 'resources/graphics/coins/gold')
+                            sprite = Coin((x,y), tile_size, 'resources/graphics/coins/gold', 5)
                         elif val == '1':
-                            sprite = Coin((x,y), tile_size, 'resources/graphics/coins/silver')
+                            sprite = Coin((x,y), tile_size, 'resources/graphics/coins/silver', 1)
                     
                     if type == 'fg_palms':
                         if val == '0':
@@ -265,6 +268,12 @@ class Level:
             if pygame.sprite.spritecollide(enemy, self.constraints_sprite, False):
                 enemy.reverse_direction()
 
+    def coin_collision(self):
+        collided_coins = pygame.sprite.spritecollide(self.player_sprite.sprite, self.coin_sprite, True)
+        if collided_coins:
+            for coin in collided_coins:
+                self.update_coin_count(coin.value)
+
     def check_death(self):
         if self.player_sprite.sprite.rect.top > screen_height:
             self.create_overworld(self.current_level, 0)
@@ -307,6 +316,7 @@ class Level:
 
         # Coins
         self.coin_sprite.update(self.world_shift)
+        self.coin_collision()
         self.coin_sprite.draw(self.display_surface)
 
         # Player
