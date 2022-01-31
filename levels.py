@@ -33,9 +33,6 @@ class Level:
         self.goal_sprite = pygame.sprite.GroupSingle()
         self.player_setup(player_layout)
 
-        # x position when a collision occurs horizontally
-        self.current_x = None
-
         # Dust
         self.dust_sprite = pygame.sprite.GroupSingle()
         self.player_on_ground = False 
@@ -67,6 +64,7 @@ class Level:
         # Enemies
         enemies_layout = import_csv_layout(level_data['enemies'])
         self.enemies_sprite = self.create_tile_group(enemies_layout, 'enemies')
+        self.explosion_sprite = pygame.sprite.Group()
 
         # Constraints
         constraints_layout = import_csv_layout(level_data['constraints'])
@@ -176,7 +174,7 @@ class Level:
 
     def scroll_x(self):
         player = self.player_sprite.sprite
-        player_x = player.rect.centerx
+        player_x = player.collision_rect.centerx
         direction_x = player.directions.x
 
         # Condition to move the world left side instead of the player when the 
@@ -200,7 +198,7 @@ class Level:
         player = self.player_sprite.sprite
         
         # Moves the player horizontally based on the player's direction
-        player.rect.x += player.directions.x * player.speed
+        player.collision_rect.x += player.directions.x * player.speed
 
         collidable_sprites = self.terrain_sprites.sprites() + self.fg_palm_sprite.sprites() + self.crate_sprite.sprites()
 
@@ -208,27 +206,19 @@ class Level:
         for sprite in collidable_sprites:
             
             # Condition to check for collision
-            if sprite.rect.colliderect(player.rect):
+            if sprite.rect.colliderect(player.collision_rect):
                 
                 # If the player collides to the right of the tile change the
                 # player's left position to tile's right position
                 if player.directions.x < 0:
-                    player.rect.left = sprite.rect.right
+                    player.collision_rect.left = sprite.rect.right
                     player.on_left = True
-                    self.current_x = player.rect.left
 
                 # If the player collides to the left of the tile change the
                 # player's right position to tile's left position
                 elif player.directions.x > 0:
-                    player.rect.right = sprite.rect.left
+                    player.collision_rect.right = sprite.rect.left
                     player.on_right = True
-                    self.current_x = player.rect.right
-        
-        if player.on_left and (player.rect.left < self.current_x or player.directions.x >= 0):
-            player.on_left = False
-        
-        if player.on_right and (player.rect.right > self.current_x or player.directions.x <= 0):
-            player.on_right = False
 
     # Function that implements vertical movement of the player and
     # vertical collision of the player with the tiles
@@ -243,26 +233,24 @@ class Level:
         for sprite in collidable_sprites:
             
             # Condition to check for collision
-            if sprite.rect.colliderect(player.rect):
+            if sprite.rect.colliderect(player.collision_rect):
                 
                 # If the player collides to the top of the tile change the
                 # player's bottom position to tile's top position
                 if player.directions.y > 0:
-                    player.rect.bottom = sprite.rect.top
+                    player.collision_rect.bottom = sprite.rect.top
                     player.directions.y = 0
                     player.on_ground = True
 
                 # If the player collides to the bottom of the tile change the
                 # player's top position to tile's top position
                 elif player.directions.y < 0:
-                    player.rect.top = sprite.rect.bottom
+                    player.collision_rect.top = sprite.rect.bottom
                     player.directions.y = 0
                     player.on_ceiling = False
 
         if player.on_ground and player.directions.y < 0 or player.directions.y > 1:
             player.on_ground = False
-        if player.on_ceiling and player.directions.y > 0:
-            player.on_celing = False
 
     def enemy_collision(self):
         for enemy in self.enemies_sprite.sprites():
@@ -283,7 +271,7 @@ class Level:
                     enemy.kill()
                     self.player_sprite.sprite.jump()
                     explosion_dust = Particles(enemy.rect.center, 'explosion')
-                    self.dust_sprite.add(explosion_dust)
+                    self.explosion_sprite.add(explosion_dust)
                 
                 else:
                     self.player_sprite.sprite.apply_damage()    
@@ -323,6 +311,10 @@ class Level:
         self.enemy_player_collision()
         self.enemies_sprite.draw(self.display_surface)
 
+        # Dust
+        self.dust_sprite.update(self.world_shift)
+        self.dust_sprite.draw(self.display_surface)
+
         # Terrain
         self.terrain_sprites.update(self.world_shift)
         self.terrain_sprites.draw(self.display_surface)
@@ -354,9 +346,9 @@ class Level:
         self.check_death()
         self.check_win()
 
-        # Dust
-        self.dust_sprite.update(self.world_shift)
-        self.dust_sprite.draw(self.display_surface)
+        # Explosion
+        self.explosion_sprite.update(self.world_shift)
+        self.explosion_sprite.draw(self.display_surface)
 
         # Water
         self.water.draw(self.display_surface, self.world_shift)        

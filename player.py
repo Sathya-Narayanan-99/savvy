@@ -29,6 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.directions = pygame.math.Vector2(0, 0)
         self.gravity = 0.8
         self.jump_speed = -16
+        self.collision_rect = pygame.Rect(self.rect.topleft, (40, self.rect.height))
 
         # Player Status
         self.status = 'idle'
@@ -58,28 +59,20 @@ class Player(pygame.sprite.Sprite):
         image = animation[int(self.frame_index)]
         if self.facing_right:
             self.image = image
+            self.rect.bottomleft = self.collision_rect.bottomleft
+
         else:
             flipped_image = pygame.transform.flip(image, True, False)
             self.image = flipped_image
+            self.rect.bottomright = self.collision_rect.bottomright
 
         if self.is_invincible:
             self.image.set_alpha(self.get_alpha_value())
         else:
             self.image.set_alpha(255)
+
+        self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
         
-        # Setting the rect
-        if self.on_ground and self.on_right:
-            self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
-        elif self.on_ground and self.on_left:
-            self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
-        elif self.on_ground:
-            self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
-        elif self.on_ceiling and self.on_right:
-            self.rect = self.image.get_rect(topright = self.rect.topright)
-        elif self.on_ceiling and self.on_left:
-            self.rect = self.image.get_rect(topleft = self.rect.topleft)
-        elif self.on_ceiling:
-            self.rect = self.image.get_rect(midtop = self.rect.midtop)
 
     def animate_dust_run(self):
         if self.status == 'run' and self.on_ground:
@@ -127,7 +120,7 @@ class Player(pygame.sprite.Sprite):
 
     def apply_gravity(self):
         self.directions.y += self.gravity
-        self.rect.y += self.directions.y
+        self.collision_rect.y += self.directions.y
 
     def apply_damage(self):
         if not self.is_invincible:
