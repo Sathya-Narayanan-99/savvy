@@ -9,7 +9,7 @@ from support import import_csv_layout, partition_tile_set
 from game_data import levels
 
 class Level:
-    def __init__(self, current_level, surface, create_overworld, update_coin_count):
+    def __init__(self, current_level, surface, create_overworld, update_coin_count, update_health):
         # Screen where all the sprites in the level should be drawn
         self.display_surface = surface
 
@@ -25,6 +25,7 @@ class Level:
         
         # UI
         self.update_coin_count = update_coin_count
+        self.update_health = update_health
 
         # Player
         player_layout = import_csv_layout(level_data['player'])
@@ -113,7 +114,7 @@ class Level:
                 y = row_index * tile_size
 
                 if val == '0':
-                    sprite = Player((x, y), self.display_surface, self.create_jump_particles)
+                    sprite = Player((x, y), self.display_surface, self.create_jump_particles, self.update_health)
                     self.player_sprite.add(sprite)
 
                 if val == '1':
@@ -268,6 +269,25 @@ class Level:
             if pygame.sprite.spritecollide(enemy, self.constraints_sprite, False):
                 enemy.reverse_direction()
 
+    def enemy_player_collision(self):
+        collided_enemy = pygame.sprite.spritecollide(self.player_sprite.sprite, self.enemies_sprite, False)
+
+        if collided_enemy:
+            for enemy in collided_enemy:
+                enemy_center = enemy.rect.centery
+                enemy_top = enemy.rect.top
+                player_bottom = self.player_sprite.sprite.rect.bottom
+
+                if enemy_top < player_bottom < enemy_center and self.player_sprite.sprite.directions[1] > 0:
+                    
+                    enemy.kill()
+                    self.player_sprite.sprite.jump()
+                    explosion_dust = Particles(enemy.rect.center, 'explosion')
+                    self.dust_sprite.add(explosion_dust)
+                
+                else:
+                    self.player_sprite.sprite.apply_damage()    
+
     def coin_collision(self):
         collided_coins = pygame.sprite.spritecollide(self.player_sprite.sprite, self.coin_sprite, True)
         if collided_coins:
@@ -300,6 +320,7 @@ class Level:
         self.enemies_sprite.update(self.world_shift)
         self.constraints_sprite.update(self.world_shift)
         self.enemy_collision()
+        self.enemy_player_collision()
         self.enemies_sprite.draw(self.display_surface)
 
         # Terrain

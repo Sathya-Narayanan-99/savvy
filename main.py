@@ -21,7 +21,7 @@ class Game:
         self.ui = UI(screen)
 
     def create_level(self, current_level):
-        self.level = Level(current_level, screen, self.create_overworld, self.update_coin_count)
+        self.level = Level(current_level, screen, self.create_overworld, self.update_coin_count, self.update_health)
         self.status = 'level'
 
     def create_overworld(self, current_level, new_max_level):
@@ -32,6 +32,9 @@ class Game:
 
     def update_coin_count(self, amount):
         self.coin_count += amount
+
+    def update_health(self, amount):
+        self.cur_health -= amount
 
     def run(self):
         if self.status == 'overworld':

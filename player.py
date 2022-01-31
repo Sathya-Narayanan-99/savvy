@@ -1,8 +1,9 @@
 import pygame
 from support import import_folder
+from math import sin
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, position, surface, create_jump_particles):
+    def __init__(self, position, surface, create_jump_particles, update_health):
         super().__init__()
         self.import_character_asset()
         self.frame_index = 0
@@ -10,6 +11,12 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animations['idle'][self.frame_index]
         self.rect = self.image.get_rect(topleft = position)
         self.display_surface = surface
+
+        # Health management
+        self.update_health = update_health
+        self.is_invincible = False
+        self.invincibility_duration = 2000
+        self.hurt_time = 0
 
         # Dust particles
         self.import_dust_run_particles()
@@ -54,6 +61,11 @@ class Player(pygame.sprite.Sprite):
         else:
             flipped_image = pygame.transform.flip(image, True, False)
             self.image = flipped_image
+
+        if self.is_invincible:
+            self.image.set_alpha(self.get_alpha_value())
+        else:
+            self.image.set_alpha(255)
         
         # Setting the rect
         if self.on_ground and self.on_right:
@@ -117,6 +129,23 @@ class Player(pygame.sprite.Sprite):
         self.directions.y += self.gravity
         self.rect.y += self.directions.y
 
+    def apply_damage(self):
+        if not self.is_invincible:
+            self.update_health(10)
+            self.is_invincible = True
+            self.hurt_time = pygame.time.get_ticks()
+    
+    def invincibility_timer(self):
+        current_time = pygame.time.get_ticks()
+
+        if current_time - self.hurt_time >= self.invincibility_duration:
+            self.is_invincible = False
+    
+    def get_alpha_value(self):
+        wave = sin(pygame.time.get_ticks())
+        if wave >= 0: return 255
+        else: return 0
+
     def jump(self):
         self.directions.y = self.jump_speed
 
@@ -125,3 +154,4 @@ class Player(pygame.sprite.Sprite):
         self.get_status()
         self.animate()
         self.animate_dust_run()
+        self.invincibility_timer()
