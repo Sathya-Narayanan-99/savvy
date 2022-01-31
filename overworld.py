@@ -62,7 +62,7 @@ class Overworld:
         # timer
         self.start_time = pygame.time.get_ticks()
         self.allow_input = False
-        self.enable_input_time = 1000
+        self.enable_input_time = 800
     
     def setup_nodes(self):
         self.nodes_sprite = pygame.sprite.Group()

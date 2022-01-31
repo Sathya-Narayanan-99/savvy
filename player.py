@@ -38,6 +38,13 @@ class Player(pygame.sprite.Sprite):
         self.on_ceiling = False
         self.on_left = False
         self.on_right = False
+
+        # Audio
+        self.jump_sound = pygame.mixer.Sound("resources/audio/effects/jump.wav")
+        self.jump_sound.set_volume(0.1)
+
+        self.hit_sound = pygame.mixer.Sound("resources/audio/effects/hit.wav")
+        self.hit_sound.set_volume(0.1)
     
     def import_character_asset(self):
         character_path = "resources/graphics/character/"
@@ -105,6 +112,9 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE] and self.on_ground:
             self.jump()
             self.create_jump_particles(self.rect.midbottom)
+
+            if not pygame.mixer.get_busy():
+                self.jump_sound.play()
     
     def get_status(self):
         
@@ -125,6 +135,7 @@ class Player(pygame.sprite.Sprite):
     def apply_damage(self):
         if not self.is_invincible:
             self.update_health(10)
+            self.hit_sound.play()
             self.is_invincible = True
             self.hurt_time = pygame.time.get_ticks()
     

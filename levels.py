@@ -17,6 +17,13 @@ class Level:
         # of the world movement
         self.world_shift = 0
 
+        # Audio
+        self.coin_sound = pygame.mixer.Sound("resources/audio/effects/coin.wav")
+        self.coin_sound.set_volume(0.1)
+
+        self.stomp_sound = pygame.mixer.Sound("resources/audio/effects/stomp.wav")
+        self.stomp_sound.set_volume(0.1)
+
         # Overworld
         self.create_overworld = create_overworld
         self.current_level = current_level
@@ -272,6 +279,7 @@ class Level:
                     self.player_sprite.sprite.jump()
                     explosion_dust = Particles(enemy.rect.center, 'explosion')
                     self.explosion_sprite.add(explosion_dust)
+                    self.stomp_sound.play()
                 
                 else:
                     self.player_sprite.sprite.apply_damage()    
@@ -281,6 +289,7 @@ class Level:
         if collided_coins:
             for coin in collided_coins:
                 self.update_coin_count(coin.value)
+                self.coin_sound.play()
 
     def check_death(self):
         if self.player_sprite.sprite.rect.top > screen_height:
