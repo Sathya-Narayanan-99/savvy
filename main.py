@@ -1,14 +1,24 @@
-from typing import overload
 import pygame, sys
 from settings import *
 from levels import Level
 from overworld import Overworld
+from ui import UI
 
 class Game:
     def __init__(self):
+        
+        # Overworld Creation
         self.max_level = 0
         self.overworld = Overworld(0, self.max_level, screen, self.create_level)
         self.status = 'overworld'
+
+        # Game Attributes
+        self.max_health = 100
+        self.cur_health = 58
+        self.coin_count = 0
+
+        # UI
+        self.ui = UI(screen)
 
     def create_level(self, current_level):
         self.level = Level(current_level, screen, self.create_overworld)
@@ -25,6 +35,8 @@ class Game:
             self.overworld.run()
         else:
             self.level.run()
+            self.ui.display_health(self.cur_health, self.max_health)
+            self.ui.display_coins(self.coin_count)
 
 # Pygame setup
 pygame.init()
