@@ -7,7 +7,7 @@ from particles import Particles
 from decorations import Sky, Water, Cloud
 from support import import_csv_layout, partition_tile_set
 from game_data import levels
-from menu import Menu
+from menu import PauseMenu
 
 class Level:
     def __init__(self, current_level, surface, create_overworld, update_coin_count, update_health):
@@ -307,7 +307,7 @@ class Level:
     def get_input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE] and self.allow_input:
-            self.pause_menu = Menu(self.display_surface, self.exit_pause_menu, 
+            self.pause_menu = PauseMenu(self.display_surface, self.exit_pause_menu, 
             self.create_overworld, self.current_level)
             self.is_pause = True
 

@@ -94,3 +94,24 @@ levels = {
 	3: level_3,
 	4: level_4,
 	5: level_5}
+
+resume_menu = {
+    'node_pos': (250, 450),
+    'node_graphics': 'resources/graphics/menu/resume'
+}
+
+overworld_menu = {
+    'node_pos': (600, 210),
+    'node_graphics': 'resources/graphics/menu/overworld'
+}
+
+quit_menu = {
+    'node_pos': (950, 400),
+    'node_graphics': 'resources/graphics/menu/quit'
+}
+
+menus = {
+    'resume': resume_menu,
+    'overworld': overworld_menu,
+    'quit': quit_menu
+}

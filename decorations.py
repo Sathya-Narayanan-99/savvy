@@ -1,5 +1,4 @@
 import pygame
-from pygame import sprite
 from settings import vertical_tile_count, screen_width, tile_size
 from tiles import AnimatedTile, StaticTile
 from support import import_folder
