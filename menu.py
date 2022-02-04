@@ -41,6 +41,19 @@ class Icon(pygame.sprite.Sprite):
     def update(self):
         self.rect.center = self.position
 
+class Star(pygame.sprite.Sprite):
+    def __init__(self, pos, is_available):
+        super().__init__()
+        self.image = pygame.Surface((20, 20))
+        self.rect = self.image.get_rect(topleft = pos)
+        self.is_available = is_available
+
+    def update(self):
+        if self.is_available:
+            self.image.fill('gold')
+        else:
+            self.image.fill('black')
+
 class Menu:
     def __init__(self, surface):
         
@@ -112,6 +125,7 @@ class Overworld(Menu):
         # Sprites
         self.nodes_sprite = self.setup_nodes()
         super().setup_icon(self.nodes_sprite.sprites(), self.current_level)
+        self.star_sprite = self.setup_star()
 
     def setup_nodes(self):
         nodes_sprite = pygame.sprite.Group()
@@ -125,6 +139,31 @@ class Overworld(Menu):
             nodes_sprite.add(sprite)
         
         return nodes_sprite
+
+    def setup_star(self):
+        star_sprite = pygame.sprite.Group()
+
+        for level in range(self.max_level + 1):
+            star_amount = levels[level]['star_amount']
+
+            for i in range(5):
+
+                if i < star_amount:
+                    is_available = True
+                else:
+                    is_available = False
+
+                if i == 0:
+                    node = self.nodes_sprite.sprites()[level]
+                    pos = (node.rect.bottomleft[0] + 7, node.rect.bottomleft[1] - 10)
+                else:
+                    pos = (pos[0] + 40, pos[1])
+                
+                star = Star(pos, is_available)
+                
+                star_sprite.add(star)
+
+        return star_sprite
 
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -153,10 +192,12 @@ class Overworld(Menu):
         self.nodes_sprite.update()
         super().update_icon(self.nodes_sprite.sprites(), self.current_level)
         self.icon_sprite.update()
+        self.star_sprite.update()
         
         self.sky.draw(self.display_surface)
         super().draw_paths(self.max_level, 'overworld')
         self.nodes_sprite.draw(self.display_surface)
+        self.star_sprite.draw(self.display_surface)
         self.icon_sprite.draw(self.display_surface)
 
 class PauseMenu(Menu):

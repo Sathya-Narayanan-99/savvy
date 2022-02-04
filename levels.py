@@ -30,6 +30,11 @@ class Level:
         self.current_level = current_level
         level_data = levels[self.current_level]
         self.new_max_level = level_data['unlock']
+        self.star_amount = 0
+        
+        # Stars
+        self.total_coin_count = 0
+        self.coins_collected = 0
         
         # UI
         self.update_coin_count = update_coin_count
@@ -166,8 +171,11 @@ class Level:
                     if type == 'coins':
                         if val == '0': 
                             sprite = Coin((x,y), tile_size, 'resources/graphics/coins/gold', 5)
+                            self.total_coin_count += 5
+
                         elif val == '1':
                             sprite = Coin((x,y), tile_size, 'resources/graphics/coins/silver', 1)
+                            self.total_coin_count += 1
                     
                     if type == 'fg_palms':
                         if val == '0':
@@ -300,6 +308,7 @@ class Level:
             for coin in collided_coins:
                 self.update_coin_count(coin.value)
                 self.coin_sound.play()
+                self.coins_collected += coin.value
 
     def check_fall(self):
         if self.player_sprite.sprite.rect.top > screen_height:
@@ -322,12 +331,27 @@ class Level:
 
     def check_win(self):
         if pygame.sprite.spritecollide(self.player_sprite.sprite, self.goal_sprite, False):
+            self.update_stars()
             self.create_overworld(self.current_level, self.new_max_level)
 
     def exit_pause_menu(self):
         self.is_pause = False
         self.start_time = pygame.time.get_ticks()
         self.allow_input = False
+
+    def update_stars(self):
+        
+        if self.coins_collected == self.total_coin_count:
+            star_amount = 5
+        elif 0.5 < self.coins_collected / self.total_coin_count < 0.9:
+            star_amount = 4
+        elif 0.25 < self.coins_collected / self.total_coin_count < 0.5:
+            star_amount = 3
+        else:
+            star_amount = 1
+        
+        level_data = levels[self.current_level]
+        level_data['star_amount'] = star_amount
 
     def run(self):
 

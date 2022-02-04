@@ -10,7 +10,8 @@ level_0 = {
     'terrain': 'resources/levels/0/level_0_terrain.csv',
     'node_pos':(110,400),
     'unlock':1,
-    'node_graphics': 'resources/graphics/overworld/0'
+    'node_graphics': 'resources/graphics/overworld/0',
+    'star_amount': 0
 }
 
 level_1 = {
@@ -25,8 +26,10 @@ level_1 = {
     'terrain': 'resources/levels/0/level_0_terrain.csv',
     'node_pos':(300,220),
     'unlock':2,
-    'node_graphics': 'resources/graphics/overworld/1'
+    'node_graphics': 'resources/graphics/overworld/1',
+    'star_amount': 0
 }
+
 level_2 = {
     'bg_palms': 'resources/levels/0/level_0_bg_palms.csv',
     'coins': 'resources/levels/0/level_0_coins.csv',
@@ -37,9 +40,10 @@ level_2 = {
     'grass': 'resources/levels/0/level_0_grass.csv',
     'player': 'resources/levels/0/level_0_player.csv',
     'terrain': 'resources/levels/0/level_0_terrain.csv',
-    'node_pos':(480,610),
+    'node_pos':(480,580),
     'unlock':3,
-    'node_graphics': 'resources/graphics/overworld/2'
+    'node_graphics': 'resources/graphics/overworld/2',
+    'star_amount': 0
 }
 
 level_3 = {
@@ -52,9 +56,10 @@ level_3 = {
     'grass': 'resources/levels/0/level_0_grass.csv',
     'player': 'resources/levels/0/level_0_player.csv',
     'terrain': 'resources/levels/0/level_0_terrain.csv',
-    'node_pos':(610,350),
+    'node_pos':(610,320),
     'unlock':4,
-    'node_graphics': 'resources/graphics/overworld/3'
+    'node_graphics': 'resources/graphics/overworld/3',
+    'star_amount': 0
 }
 
 level_4 = {
@@ -69,7 +74,8 @@ level_4 = {
     'terrain': 'resources/levels/0/level_0_terrain.csv',
     'node_pos':(880,210),
     'unlock':5,
-    'node_graphics': 'resources/graphics/overworld/4'
+    'node_graphics': 'resources/graphics/overworld/4',
+    'star_amount': 0
 }
 
 level_5 = {
@@ -84,7 +90,8 @@ level_5 = {
     'terrain': 'resources/levels/0/level_0_terrain.csv',
     'node_pos':(1050,400),
     'unlock':5,
-    'node_graphics': 'resources/graphics/overworld/5'
+    'node_graphics': 'resources/graphics/overworld/5',
+    'star_amount': 0
 }
 
 levels = {
