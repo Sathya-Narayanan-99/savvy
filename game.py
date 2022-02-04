@@ -50,12 +50,23 @@ class Game:
     def update_coin_count(self, amount):
         self.coin_count += amount
 
-    def update_health(self, amount):
-        if amount > 0:
-            if self.cur_health < self.max_health:
+    def update_health(self, amount = 0, type = 'enemy_collision'):
+
+        if type == 'enemy_collision':
+            if amount > 0:
+                if self.cur_health < self.max_health:
+                    self.cur_health += amount
+            else:
                 self.cur_health += amount
+        
         else:
-            self.cur_health += amount
+            
+            if self.cur_health > 25:
+                self.cur_health = 25
+            elif 15 < self.cur_health <= 25:
+                self.cur_health = 15
+            else:
+                self.cur_health = 0
 
     def check_game_over(self):
         if self.cur_health <=0:

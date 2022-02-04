@@ -289,7 +289,7 @@ class Level:
                     explosion_dust = Particles(enemy.rect.center, 'explosion')
                     self.explosion_sprite.add(explosion_dust)
                     self.stomp_sound.play()
-                    self.update_health(2)
+                    self.update_health(5)
                 
                 else:
                     self.player_sprite.sprite.apply_damage()    
@@ -301,9 +301,11 @@ class Level:
                 self.update_coin_count(coin.value)
                 self.coin_sound.play()
 
-    def check_death(self):
+    def check_fall(self):
         if self.player_sprite.sprite.rect.top > screen_height:
-            self.create_overworld(self.current_level, 0)
+            self.update_health(type = 'fall')
+            player = self.player_sprite.sprite
+            player.collision_rect.topleft = (250, 30)
 
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -382,7 +384,7 @@ class Level:
             self.goal_sprite.update(self.world_shift)
             self.goal_sprite.draw(self.display_surface)
 
-            self.check_death()
+            self.check_fall()
             self.check_win()
 
             # Explosion

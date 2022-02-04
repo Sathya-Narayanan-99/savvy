@@ -99,7 +99,6 @@ class Menu:
             target_node = node_list[current_node]
 
             if target_node.icon_detection_zone.collidepoint(self.icon_sprite.sprite.position):
-                print("True")
                 self.is_moving = False
                 self.movement_direction = pygame.math.Vector2(0,0)
 
