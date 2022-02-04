@@ -289,6 +289,7 @@ class Level:
                     explosion_dust = Particles(enemy.rect.center, 'explosion')
                     self.explosion_sprite.add(explosion_dust)
                     self.stomp_sound.play()
+                    self.update_health(2)
                 
                 else:
                     self.player_sprite.sprite.apply_damage()    

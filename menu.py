@@ -97,7 +97,6 @@ class Menu:
         if self.is_moving and self.movement_direction:
             self.icon_sprite.sprite.position += self.movement_direction * self.speed
             target_node = node_list[current_node]
-            print(current_node)
 
             if target_node.icon_detection_zone.collidepoint(self.icon_sprite.sprite.position):
                 print("True")
