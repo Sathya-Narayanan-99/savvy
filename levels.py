@@ -10,7 +10,9 @@ from game_data import levels
 from menu import PauseMenu
 
 class Level:
-    def __init__(self, current_level, surface, create_overworld, update_coin_count, update_health):
+    def __init__(self, current_level, surface, 
+    create_overworld, update_coin_count, update_health, update_rum):
+
         # Screen where all the sprites in the level should be drawn
         self.display_surface = surface
 
@@ -23,10 +25,10 @@ class Level:
         self.coin_sound.set_volume(0.1)
 
         self.stomp_sound = pygame.mixer.Sound("resources/audio/effects/stomp.wav")
-        self.stomp_sound.set_volume(0.1)
+        self.stomp_sound.set_volume(0.25)
 
-        self.rum_sound = pygame.mixer.Sound("resources/audio/effects/rum.wav")
-        self.rum_sound.set_volume(0.5)
+        self.rum_sound = pygame.mixer.Sound("resources/audio/effects/rum_collect.wav")
+        self.rum_sound.set_volume(0.25)
 
         self.waterfall_sound = pygame.mixer.Sound("resources/audio/effects/fall.wav")
         self.waterfall_sound.set_volume(0.5)
@@ -45,6 +47,7 @@ class Level:
         # UI
         self.update_coin_count = update_coin_count
         self.update_health = update_health
+        self.update_rum = update_rum
 
         # Pause Menu
         self.is_pause = False
@@ -339,7 +342,7 @@ class Level:
 
     def rum_collision(self):
         if pygame.sprite.spritecollide(self.player_sprite.sprite, self.rum_sprite, True):
-            self.update_health(type = 'rum')
+            self.update_rum(type = 'collect')
             self.rum_sound.play()
 
     def check_fall(self):
@@ -352,13 +355,16 @@ class Level:
             self.waterfall_sound.play()
             self.waterfall_sound.fadeout(1000)
             
-
     def get_input(self):
         keys = pygame.key.get_pressed()
+        
         if keys[pygame.K_ESCAPE] and self.allow_input:
             self.pause_menu = PauseMenu(self.display_surface, self.exit_pause_menu, 
             self.create_overworld, self.current_level)
             self.is_pause = True
+
+        if keys[pygame.K_LCTRL]:
+            self.update_rum(type='use')
 
     def input_timer(self):
         if not self.allow_input:

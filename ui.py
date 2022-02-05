@@ -15,6 +15,10 @@ class UI:
         self.coin_rect = self.coin.get_rect(topleft = (50,61))
         self.font = pygame.font.Font('resources/graphics/ui/ARCADEPI.TTF', 30)
 
+        # Rum
+        self.rum = pygame.image.load("resources/graphics/ui/rum.png").convert_alpha()
+        self.rum_rect = self.rum.get_rect(topleft = (49,95))
+
     def display_health(self, cur_health, max_health):
         cur_health_ratio = cur_health / max_health
         cur_width = self.bar_max_width * cur_health_ratio
@@ -28,3 +32,9 @@ class UI:
         coin_amount_rect = coin_amount_surf.get_rect(midleft = (self.coin_rect.right + 4, self.coin_rect.centery))
         self.display_surface.blit(self.coin, self.coin_rect)
         self.display_surface.blit(coin_amount_surf, coin_amount_rect)
+
+    def display_rum(self, rum_amount):
+        rum_amount_surf = self.font.render(str(rum_amount), False, '#33323d')
+        rum_amount_rect = rum_amount_surf.get_rect(midleft = (self.rum_rect.right + 4, self.rum_rect.centery + 4))
+        self.display_surface.blit(self.rum, self.rum_rect)
+        self.display_surface.blit(rum_amount_surf, rum_amount_rect)

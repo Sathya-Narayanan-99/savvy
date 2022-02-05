@@ -12,6 +12,9 @@ class Game:
         self.level_bg_music = pygame.mixer.Sound("resources/audio/level_music.wav")
         self.level_bg_music.set_volume(0.1)
 
+        self.rum_sound = pygame.mixer.Sound("resources/audio/effects/rum.wav")
+        self.rum_sound.set_volume(0.5)
+
         self.overworld_bg_music = pygame.mixer.Sound("resources/audio/overworld_music.wav")
         self.overworld_bg_music.set_volume(0.1)
 
@@ -25,13 +28,15 @@ class Game:
         self.max_health = 100
         self.cur_health = 100
         self.coin_count = 0
+        self.rum = 0
 
         # UI
         self.ui = UI(screen)
 
     def create_level(self, current_level):
         self.level = Level(current_level, self.display_surface, 
-        self.create_overworld, self.update_coin_count, self.update_health)
+        self.create_overworld, self.update_coin_count, self.update_health,
+        self.update_rum)
         
         self.status = 'level'
         self.overworld_bg_music.stop()
@@ -67,12 +72,17 @@ class Game:
                 self.cur_health = 15
             else:
                 self.cur_health = 0
+    
+    def update_rum(self, type):
         
-        elif type == 'rum':
-            if self.cur_health < 80:
+        if type == 'collect':
+            self.rum += 1
+        
+        elif type == 'use':
+            if self.cur_health < 80 and self.rum > 0:
                 self.cur_health = 80
-            else:
-                self.cur_health = 100
+                self.rum -= 1
+                self.rum_sound.play()
 
     def check_game_over(self):
         if self.cur_health <=0:
@@ -95,4 +105,5 @@ class Game:
             self.level.run()
             self.ui.display_health(self.cur_health, self.max_health)
             self.ui.display_coins(self.coin_count)
+            self.ui.display_rum(self.rum)
             self.check_game_over()
