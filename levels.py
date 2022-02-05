@@ -25,6 +25,12 @@ class Level:
         self.stomp_sound = pygame.mixer.Sound("resources/audio/effects/stomp.wav")
         self.stomp_sound.set_volume(0.1)
 
+        self.rum_sound = pygame.mixer.Sound("resources/audio/effects/rum.wav")
+        self.rum_sound.set_volume(0.5)
+
+        self.waterfall_sound = pygame.mixer.Sound("resources/audio/effects/fall.wav")
+        self.waterfall_sound.set_volume(0.5)
+
         # Overworld
         self.create_overworld = create_overworld
         self.current_level = current_level
@@ -334,6 +340,7 @@ class Level:
     def rum_collision(self):
         if pygame.sprite.spritecollide(self.player_sprite.sprite, self.rum_sprite, True):
             self.update_health(type = 'rum')
+            self.rum_sound.play()
 
     def check_fall(self):
         if self.player_sprite.sprite.rect.top > screen_height:
@@ -342,6 +349,9 @@ class Level:
 
             respawn_pos = (self.respawn_tile.rect.centerx, 0)
             player.respawn(respawn_pos)
+            self.waterfall_sound.play()
+            self.waterfall_sound.fadeout(1000)
+            
 
     def get_input(self):
         keys = pygame.key.get_pressed()
