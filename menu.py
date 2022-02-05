@@ -200,7 +200,7 @@ class Overworld(Menu):
                 self.current_level -= 1
                 self.is_moving = True
 
-            elif keys[pygame.K_SPACE]:
+            elif keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:
                 self.create_level(self.current_level)
 
     def run(self):
