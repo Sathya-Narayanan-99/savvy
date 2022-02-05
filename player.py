@@ -18,6 +18,11 @@ class Player(pygame.sprite.Sprite):
         self.invincibility_duration = 2000
         self.hurt_time = 0
 
+        # Respawn
+        self.is_respawning = False
+        self.respawn_duration = 250
+        self.respawn_time = 0
+
         # Dust particles
         self.import_dust_run_particles()
         self.dust_frame_index = 0
@@ -100,10 +105,10 @@ class Player(pygame.sprite.Sprite):
     def get_input(self):
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] and not self.is_respawning:
             self.directions.x = 1
             self.facing_right = True
-        elif keys[pygame.K_LEFT]:
+        elif keys[pygame.K_LEFT] and not self.is_respawning:
             self.directions.x = -1
             self.facing_right = False
         else:
@@ -144,6 +149,12 @@ class Player(pygame.sprite.Sprite):
 
         if current_time - self.hurt_time >= self.invincibility_duration:
             self.is_invincible = False
+
+    def respawn_timer(self):
+        current_time = pygame.time.get_ticks()
+
+        if current_time - self.respawn_time >= self.respawn_duration:
+            self.is_respawning = False
     
     def get_alpha_value(self):
         wave = sin(pygame.time.get_ticks())
@@ -153,9 +164,17 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         self.directions.y = self.jump_speed
 
+    def respawn(self, pos):
+        self.collision_rect.center = pos
+        self.is_invincible = True
+        self.is_respawning = True
+        self.hurt_time = pygame.time.get_ticks()
+        self.respawn_time = pygame.time.get_ticks()
+
     def update(self):
         self.get_input()
         self.get_status()
         self.animate()
         self.animate_dust_run()
         self.invincibility_timer()
+        self.respawn_timer()

@@ -91,6 +91,10 @@ class Level:
         constraints_layout = import_csv_layout(level_data['constraints'])
         self.constraints_sprite = self.create_tile_group(constraints_layout, 'constraints')
 
+        # Respawn
+        respawn_layout = import_csv_layout(level_data['respawn'])
+        self.respawn_sprite = self.create_tile_group(respawn_layout, 'respawn')
+
         # Decorations
         self.sky = Sky(7)
         level_width = len(terrain_layout[0]) * tile_size
@@ -192,6 +196,9 @@ class Level:
                     if type == 'constraints':
                         sprite = Tile((x, y), tile_size)
 
+                    if type == 'respawn':
+                        sprite = Tile((x, y), tile_size)
+
                     sprite_group.add(sprite)
 
         return sprite_group
@@ -276,6 +283,13 @@ class Level:
         if player.on_ground and player.directions.y < 0 or player.directions.y > 1:
             player.on_ground = False
 
+    def update_respawn_position(self):
+        player = self.player_sprite.sprite
+
+        for sprite in self.respawn_sprite:
+            if sprite.rect.colliderect(player.collision_rect):
+                self.respawn_tile = sprite
+
     def enemy_collision(self):
         for enemy in self.enemies_sprite.sprites():
             if pygame.sprite.spritecollide(enemy, self.constraints_sprite, False):
@@ -314,7 +328,9 @@ class Level:
         if self.player_sprite.sprite.rect.top > screen_height:
             self.update_health(type = 'fall')
             player = self.player_sprite.sprite
-            player.collision_rect.topleft = (250, 30)
+
+            respawn_pos = (self.respawn_tile.rect.centerx, 0)
+            player.respawn(respawn_pos)
 
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -398,6 +414,8 @@ class Level:
             self.coin_sprite.draw(self.display_surface)
 
             # Player
+            self.update_respawn_position()
+            self.respawn_sprite.update(self.world_shift)
             self.player_sprite.update()
             self.horizontal_movement_collision()
             self.get_player_on_ground()
