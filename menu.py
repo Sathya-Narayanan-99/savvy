@@ -275,6 +275,7 @@ class PauseMenu(Menu):
         self.get_input()
         super().update_icon(self.node_sprite.sprites(), self.current_option)
         self.icon_sprite.update()
+        self.node_sprite.update()
 
         self.sky.draw(self.display_surface)
         super().draw_paths(self.max_options, 'pause_menu')
