@@ -16,7 +16,7 @@ class Game:
         self.overworld_bg_music.set_volume(0.1)
 
         # Overworld Creation
-        self.max_level = 5
+        self.max_level = 0
         self.overworld = Overworld(0, self.max_level, self.display_surface, self.create_level)
         self.status = 'overworld'
         self.overworld_bg_music.play(-1)

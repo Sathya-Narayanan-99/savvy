@@ -3,6 +3,7 @@ import sys
 from game_data import levels, menus
 from decorations import Sky
 from support import import_folder
+from random import randint
 
 class Node(pygame.sprite.Sprite):
     def __init__(self, pos, is_available, icon_speed, path):
@@ -29,7 +30,7 @@ class Node(pygame.sprite.Sprite):
         else:
             tint_image = self.image.copy()
             tint_image.fill('black', None, pygame.BLEND_RGBA_MULT)
-            self.image.blit(tint_image, (0,0,))
+            self.image.blit(tint_image, (0,0))
 
 class Icon(pygame.sprite.Sprite):
     def __init__(self, pos):
@@ -44,15 +45,31 @@ class Icon(pygame.sprite.Sprite):
 class Star(pygame.sprite.Sprite):
     def __init__(self, pos, is_available):
         super().__init__()
-        self.image = pygame.Surface((20, 20))
-        self.rect = self.image.get_rect(topleft = pos)
+        self.frames = import_folder('resources/graphics/star')
         self.is_available = is_available
+
+        if self.is_available:
+            self.frame_index = randint(0, len(self.frames) - 1)
+        else:
+            self.frame_index = 0
+
+        self.animation_speed = 0.15
+
+        self.image = self.frames[int(self.frame_index)]
+        self.rect = self.image.get_rect(topleft = pos)
+
+    def animate(self):
+        self.frame_index += self.animation_speed
+        if self.frame_index >= len(self.frames): self.frame_index = 0
+        self.image = self.frames[int(self.frame_index)]
 
     def update(self):
         if self.is_available:
-            self.image.fill('gold')
+            self.animate()
         else:
-            self.image.fill('black')
+            tint_image = self.image.copy()
+            tint_image.fill('black', None, pygame.BLEND_RGBA_MULT)
+            self.image.blit(tint_image, (0,0))
 
 class Menu:
     def __init__(self, surface):
@@ -155,7 +172,7 @@ class Overworld(Menu):
 
                 if i == 0:
                     node = self.nodes_sprite.sprites()[level]
-                    pos = (node.rect.bottomleft[0] + 7, node.rect.bottomleft[1] - 10)
+                    pos = (node.rect.bottomleft[0] + 5, node.rect.bottomleft[1] - 10)
                 else:
                     pos = (pos[0] + 40, pos[1])
                 
@@ -197,8 +214,8 @@ class Overworld(Menu):
         self.sky.draw(self.display_surface)
         super().draw_paths(self.max_level, 'overworld')
         self.nodes_sprite.draw(self.display_surface)
-        self.star_sprite.draw(self.display_surface)
         self.icon_sprite.draw(self.display_surface)
+        self.star_sprite.draw(self.display_surface)
 
 class PauseMenu(Menu):
     def __init__(self, surface, exit_pause_menu, create_overworld, current_level):
