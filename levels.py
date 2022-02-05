@@ -1,5 +1,5 @@
 import pygame
-from tiles import Tile, StaticTile, Crate, Coin, Palm
+from tiles import AnimatedTile, Tile, StaticTile, Crate, Coin, Palm, Rum
 from player import Player
 from enemy import Enemy
 from settings import tile_size, screen_width, screen_height
@@ -94,6 +94,10 @@ class Level:
         # Respawn
         respawn_layout = import_csv_layout(level_data['respawn'])
         self.respawn_sprite = self.create_tile_group(respawn_layout, 'respawn')
+
+        # Rum
+        rum_layout = import_csv_layout(level_data['rum'])
+        self.rum_sprite = self.create_tile_group(rum_layout, 'rum')
 
         # Decorations
         self.sky = Sky(7)
@@ -198,6 +202,9 @@ class Level:
 
                     if type == 'respawn':
                         sprite = Tile((x, y), tile_size)
+
+                    if type == 'rum':
+                        sprite = Rum((x, y), tile_size, 'resources/graphics/rum')
 
                     sprite_group.add(sprite)
 
@@ -324,6 +331,10 @@ class Level:
                 self.coin_sound.play()
                 self.coins_collected += coin.value
 
+    def rum_collision(self):
+        if pygame.sprite.spritecollide(self.player_sprite.sprite, self.rum_sprite, True):
+            self.update_health(type = 'rum')
+
     def check_fall(self):
         if self.player_sprite.sprite.rect.top > screen_height:
             self.update_health(type = 'fall')
@@ -404,8 +415,13 @@ class Level:
             self.crate_sprite.update(self.world_shift)
             self.crate_sprite.draw(self.display_surface)
 
+            # Rum
+            self.rum_sprite.update(self.world_shift)
+            self.rum_sprite.draw(self.display_surface)
+
             # Grass
             self.grass_sprites.update(self.world_shift)
+            self.rum_collision()
             self.grass_sprites.draw(self.display_surface)
 
             # Coins

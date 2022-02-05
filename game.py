@@ -59,7 +59,7 @@ class Game:
             else:
                 self.cur_health += amount
         
-        else:
+        elif type == 'fall':
             
             if self.cur_health > 25:
                 self.cur_health = 25
@@ -67,6 +67,12 @@ class Game:
                 self.cur_health = 15
             else:
                 self.cur_health = 0
+        
+        elif type == 'rum':
+            if self.cur_health < 80:
+                self.cur_health = 80
+            else:
+                self.cur_health = 100
 
     def check_game_over(self):
         if self.cur_health <=0:

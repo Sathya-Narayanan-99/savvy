@@ -67,3 +67,10 @@ class Palm(AnimatedTile):
             position = (position[0], position[1] - 60)
         
         self.rect.topleft = position
+
+class Rum(AnimatedTile):
+    def __init__(self, position, size, path):
+        super().__init__(position, size, path)
+
+        position = (position[0], position[1] + 2)
+        self.rect.topleft = position
