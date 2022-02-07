@@ -19,6 +19,11 @@ class UI:
         self.rum = pygame.image.load("resources/graphics/ui/rum.png").convert_alpha()
         self.rum_rect = self.rum.get_rect(topleft = (49,95))
 
+        # Lives
+        self.life = pygame.image.load("resources/graphics/overworld/hat.png").convert_alpha()
+        self.life = pygame.transform.scale(self.life, (24, 14))
+        self.life_rect = self.life.get_rect(topleft = (57, 17))
+
     def display_health(self, cur_health, max_health):
         cur_health_ratio = cur_health / max_health
         cur_width = self.bar_max_width * cur_health_ratio
@@ -38,3 +43,12 @@ class UI:
         rum_amount_rect = rum_amount_surf.get_rect(midleft = (self.rum_rect.right + 4, self.rum_rect.centery + 4))
         self.display_surface.blit(self.rum, self.rum_rect)
         self.display_surface.blit(rum_amount_surf, rum_amount_rect)
+
+    def display_life(self, life_count):
+        life_list = []
+        for life in range(life_count):
+            life_list.append(self.life)
+        
+        for i, life in enumerate(life_list):
+            pos = (self.life_rect.topleft[0] + (i*30), self.life_rect.topleft[1])
+            self.display_surface.blit(life, pos)

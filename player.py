@@ -1,6 +1,7 @@
 import pygame
 from support import import_folder
 from math import sin
+from particles import Particles
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, position, surface, create_jump_particles, update_health):
@@ -28,6 +29,9 @@ class Player(pygame.sprite.Sprite):
         self.dust_frame_index = 0
         self.dust_animation_speed = 0.15
         self.create_jump_particles = create_jump_particles
+
+        # Explosion
+        self.explosion_sprite = pygame.sprite.Group()
 
         # Player Movement
         self.speed = 8
@@ -85,7 +89,6 @@ class Player(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
         
-
     def animate_dust_run(self):
         if self.status == 'run' and self.on_ground:
             self.dust_frame_index += self.dust_animation_speed
@@ -139,7 +142,7 @@ class Player(pygame.sprite.Sprite):
 
     def apply_damage(self):
         if not self.is_invincible:
-            self.update_health(-10)
+            self.update_health(-10, player_explode = self.explode)
             self.hit_sound.play()
             self.is_invincible = True
             self.hurt_time = pygame.time.get_ticks()
@@ -170,6 +173,10 @@ class Player(pygame.sprite.Sprite):
         self.is_respawning = True
         self.hurt_time = pygame.time.get_ticks()
         self.respawn_time = pygame.time.get_ticks()
+
+    def explode(self):
+        particles = Particles(self.collision_rect.center, 'explosion')
+        self.explosion_sprite.add(particles)
 
     def update(self):
         self.get_input()

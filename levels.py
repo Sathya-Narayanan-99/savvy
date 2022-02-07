@@ -464,6 +464,8 @@ class Level:
             # Explosion
             self.explosion_sprite.update(self.world_shift)
             self.explosion_sprite.draw(self.display_surface)
+            self.player_sprite.sprite.explosion_sprite.update(self.world_shift)
+            self.player_sprite.sprite.explosion_sprite.draw(self.display_surface)
 
             # Water
             self.water.draw(self.display_surface, self.world_shift)

@@ -2,6 +2,7 @@ import pygame
 from levels import Level
 from menu import Overworld
 from ui import UI
+from game_data import levels
 
 class Game:
     def __init__(self, screen):
@@ -27,6 +28,7 @@ class Game:
         # Game Attributes
         self.max_health = 100
         self.cur_health = 100
+        self.lives = 2
         self.coin_count = 0
         self.rum = 0
 
@@ -55,7 +57,7 @@ class Game:
     def update_coin_count(self, amount):
         self.coin_count += amount
 
-    def update_health(self, amount = 0, type = 'enemy_collision'):
+    def update_health(self, amount = 0, type = 'enemy_collision', player_explode = None):
 
         if type == 'enemy_collision':
             if amount > 0:
@@ -63,6 +65,9 @@ class Game:
                     self.cur_health += amount
             else:
                 self.cur_health += amount
+
+            if self.cur_health <= 0:
+                player_explode()
         
         elif type == 'fall':
             
@@ -83,13 +88,24 @@ class Game:
                 self.cur_health = 80
                 self.rum -= 1
                 self.rum_sound.play()
+    
+    def check_death(self):
+        if self.cur_health <= 0:
+            self.lives -= 1
+            self.cur_health = 25
 
     def check_game_over(self):
-        if self.cur_health <=0:
+        if self.lives < 0:
+
             self.cur_health = 100
             self.coin_count = 0
-
             self.max_level = 0
+            self.lives = 3
+            self.rum = 0
+
+            for level in levels.values():
+                level['star_amount'] = 0
+
             self.overworld = Overworld(0, self.max_level, 
             self.display_surface, self.create_level)
             
@@ -106,4 +122,6 @@ class Game:
             self.ui.display_health(self.cur_health, self.max_health)
             self.ui.display_coins(self.coin_count)
             self.ui.display_rum(self.rum)
+            self.ui.display_life(self.lives)
+            self.check_death()
             self.check_game_over()
