@@ -1,5 +1,5 @@
 import pygame
-from tiles import AnimatedTile, Tile, StaticTile, Crate, Coin, Palm, Rum
+from tiles import Tile, StaticTile, Crate, Coin, Palm, Rum
 from player import Player
 from enemy import Enemy
 from settings import tile_size, screen_width, screen_height
@@ -386,11 +386,11 @@ class Level:
         
         if self.coins_collected == self.total_coin_count:
             star_amount = 5
-        elif 0.5 < self.coins_collected / self.total_coin_count < 0.9:
+        elif 0.5 < self.coins_collected / self.total_coin_count <= 0.9:
             star_amount = 4
-        elif 0.25 < self.coins_collected / self.total_coin_count < 0.5:
+        elif 0.25 < self.coins_collected / self.total_coin_count <= 0.5:
             star_amount = 3
-        else:
+        elif self.coins_collected / self.total_coin_count <= 0.25:
             star_amount = 1
         
         level_data = levels[self.current_level]
